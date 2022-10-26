@@ -22,9 +22,9 @@ X = double(X)/255;
 X_t = double(X_t)/255;
 
 %% iter during epochs da fare bene non funziona
-theta = rand(size(X,2),10)/100;
+theta = zeros(size(X,2),10);
 lr = 1e-3;
-epochs = 20;
+epochs = 10;
 losses= zeros(epochs,1);
 losses_test= zeros(epochs,1);
 for i=1:epochs
