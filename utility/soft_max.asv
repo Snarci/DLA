@@ -1,8 +1,12 @@
-function [smax] = soft_max(x_h)
-smax=x_h;
+function [smax,loss] = soft_max(x_h)
 %SOFT_MAX Summary of this function goes here
+    smax = x_h;
     for i=1:size(x_h,1)
-       smax(i,:)=softmax(smax(i,:));
+        [n,~]=max(x_h(i,:));
+        for j=1:size(x_h,2)
+            smax(i,j)=exp(x_h(i,j)-n)/(sum(exp(x_h(i,:)-n)));
+        end
+        
     end
 end
 

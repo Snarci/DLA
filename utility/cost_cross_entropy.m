@@ -1,6 +1,6 @@
-function [cost] = cost_cross_entropy(x,y,theta)
+function [cost] = cost_cross_entropy(x_h,one_hot_encoding)
 %COST_FUNCTION Summary of this function goes here
-h = (x*theta);
-cost = (1/size(x,1))*sum(log(exp(y)./(sum(exp(h),2))));
+
+    cost=(1/size(x_h,1))*sum(-log(sum(x_h .* one_hot_encoding,2)+eps));
 end
 
