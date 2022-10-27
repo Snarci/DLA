@@ -22,17 +22,15 @@ X = double(X)/255;
 X_t = double(X_t)/255;
 
 %% iter during epochs da fare bene non funziona
-%parametri di controllo
 num_classes=10;
+theta = zeros(size(X,2),num_classes);
 lr = 1e-3;
 epochs = 1000;
-%inizializzazione matrici
 losses= zeros(epochs,1);
 losses_test= zeros(epochs,1);
-theta = zeros(size(X,2),num_classes);
 one_hot_encoded = one_hot_encoding(y,num_classes);
 one_hot_encoded_t = one_hot_encoding(y_t,num_classes);
-%variabili salva best epoch
+
 best_epoch_weigths=theta;
 best_train_loss=Inf;
 best_test_loss=Inf;
@@ -47,22 +45,16 @@ for i=1:epochs
     loss_test = cost_cross_entropy(x_h_t,one_hot_encoded_t);
     losses_test(i) = loss_test;
     theta = theta + lr*grad;
-    if best_train_loss > loss
-        best_train_loss = loss;
-        best_epoch_weigths = theta;
-    end
-    if best_test_loss > loss_test
-        best_test_loss = loss_test;
-    end
+    plot(losses);
 end
 plot(losses);
 %% predict old and new data
-prediction_train = X*best_epoch_weigths;
+prediction_train = X*theta;
 prediction_train = soft_max(prediction_train);
 [~,prediction_train] = max(prediction_train,[],2);
 prediction_train=prediction_train-1;
 
-prediction_test = X_t*best_epoch_weigths;
+prediction_test = X_t*theta;
 prediction_test = soft_max(prediction_test);
 [~,prediction_test] = max(prediction_test,[],2);
 prediction_test=prediction_test-1;
