@@ -1,0 +1,8 @@
+function [smax] = soft_max(x_h)
+smax=x_h;
+%SOFT_MAX Summary of this function goes here
+    for i=1:size(x_h,1)
+       smax(i,:)=softmax(smax(i,:));
+    end
+end
+
