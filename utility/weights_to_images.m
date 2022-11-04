@@ -9,6 +9,7 @@ function [out_images] = weights_to_images(theta,img_w,img_h,n_classes)
         subplot(x,y,i);
         imshow(out_images(:,:,i));
         title(strcat("Class n: ",num2str(i-1)));
+        hold on
     end
 end
 
