@@ -181,8 +181,7 @@ from resnet import *
 model = ResNet50(num_classes=len(labels))
 #model = CNN_Luca_Massi(num_classes=len(labels))
 # change the last layer
- #model.fc = nn.Linear(2048, len(labels))
-model.fc = nn.Linear(512, len(labels))
+#model.fc = nn.Linear(2048, len(labels))
 #from vit_pytorch import ViT
 #model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.IMAGENET1K_V1)
 #ConvNeXt-T: C = (96, 192, 384, 768), B = (3, 3, 9, 3)
