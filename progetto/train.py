@@ -194,7 +194,7 @@ model.fc = nn.Linear(512, len(labels))
 #from models import *
 #model = ConvNextForImageClassification(in_channels=3, stem_features=64, depths=[3, 3, 9, 3], widths=[96, 192, 384, 768])
 model = model.to(device)
-model = torch.compile(model)
+#model = torch.compile(model)
 
 
 # loss function with label smoothing
