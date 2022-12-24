@@ -26,7 +26,7 @@ from modelli import *
 print(f"Torch: {torch.__version__}")
 
 # Training settings
-batch_size = 32
+batch_size = 64
 epochs = 50
 lr = 3e-5
 gamma = 0.7
@@ -178,7 +178,7 @@ torch.cuda.empty_cache()
 import torchvision.models as models
 #model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 from resnet import *
-model = ResNet18(num_classes=len(labels))
+model = ResNet50(num_classes=len(labels))
 #model = CNN_Luca_Massi(num_classes=len(labels))
 # change the last layer
  #model.fc = nn.Linear(2048, len(labels))
@@ -198,7 +198,7 @@ model = model.to(device)
 
 
 # loss function with label smoothing
-criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+criterion = nn.CrossEntropyLoss(label_smoothing=0.0)
 # optimizer
 optimizer = optim.AdamW(model.parameters(), lr=lr)
 # scheduler
