@@ -17,17 +17,17 @@ class Block(nn.Module):
         else:
             self.expansion = 1
         # ResNet50, 101, and 152 include additional layer of 1x1 kernels
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False, groups=in_channels)
         self.bn1 = nn.BatchNorm2d(out_channels)
         if self.num_layers > 34:
-            self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
+            self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=7, stride=stride, padding=3, bias=False, groups=out_channels)
         else:
             # for ResNet18 and 34, connect input directly to (3x3) kernel (skip first (1x1))
-            self.conv2 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
+            self.conv2 = nn.Conv2d(in_channels, out_channels, kernel_size=7, stride=stride, padding=3, bias=False,groups=in_channels)
         self.bn2 = nn.BatchNorm2d(out_channels)
-        self.conv3 = nn.Conv2d(out_channels, out_channels * self.expansion, kernel_size=1, stride=1, padding=0, bias=False)
+        self.conv3 = nn.Conv2d(out_channels, out_channels * self.expansion, kernel_size=1, stride=1, padding=0, bias=False, groups=out_channels)
         self.bn3 = nn.BatchNorm2d(out_channels * self.expansion)
-        self.relu = nn.ReLU()
+        self.relu = nn.GELU()
         self.downsample = downsample
         self.dropout = nn.Dropout(0.1)
         self.attention = CBAMBlock(out_channels * self.expansion)
@@ -73,7 +73,7 @@ class ResNet(nn.Module):
         else:
             layers = [3, 8, 36, 3]
         self.in_channels = 64
-        self.conv1 = nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3,bias=False)
+        self.conv1 = nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3,bias=False, groups=image_channels)
         self.bn1 = nn.BatchNorm2d(64)
         self.activation = nn.GELU()
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -106,7 +106,7 @@ class ResNet(nn.Module):
     def make_layers(self, num_layers, block, num_residual_blocks, intermediate_channels, stride):
         layers = []
 
-        downsample = nn.Sequential(nn.Conv2d(self.in_channels, intermediate_channels*self.expansion, kernel_size=1, stride=stride, bias=False),
+        downsample = nn.Sequential(nn.Conv2d(self.in_channels, intermediate_channels*self.expansion, kernel_size=1, stride=stride, bias=False, groups=self.in_channels),
                                             nn.BatchNorm2d(intermediate_channels*self.expansion))
         layers.append(block(num_layers, self.in_channels, intermediate_channels, downsample, stride))
         self.in_channels = intermediate_channels * self.expansion # 256
