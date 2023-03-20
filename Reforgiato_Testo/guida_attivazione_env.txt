@@ -1,0 +1,9 @@
+-----------------------creazione windows python env-----------------------
+python -m venv tenv
+.\tenv\Scripts\Activate
+-------------------------------da definire--------------------------------
+pip install -r requirements.txt
+#pytorch with gpu support
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
+#huggingface transformers
+pip install transformers
