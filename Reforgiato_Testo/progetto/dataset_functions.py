@@ -34,19 +34,19 @@ def read_dataset(info_filename):
 
 def get_train_transforms():
     return A.Compose([
-        A.Resize(224, 224),
+        A.Resize(384, 384),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         #rotate the image by 90 180 or 270 degrees
         A.RandomRotate90(p=0.5),
-        A.RandomResizedCrop(224, 224, scale=(0.5, 1.0), p=0.5),
-        A.GridDistortion(p=0.5, num_steps=5, distort_limit=0.3),
+        A.RandomResizedCrop(384, 384, scale=(0.5, 1.0), p=0.5),
+        #A.GridDistortion(p=0.5, num_steps=5, distort_limit=0.3),
         ToTensorV2(p=1.0),
     ], p=1.)
 
 def get_valid_transforms():
     return A.Compose([
-        A.Resize(224, 224),
+        A.Resize(384, 384),
         ToTensorV2(p=1.0),
     ], p=1.)
 
@@ -90,7 +90,10 @@ def augment(dataset):
     
 
     return augmented_dataset
-
+path_swin="microsoft/swinv2-base-patch4-window16-256"
+path_vit="google/vit-base-patch16-384"
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+image_processor = AutoImageProcessor.from_pretrained(path_vit)
 class Dataset(Dataset):
     def __init__(self, dataset, transform=None):
         self.dataset = dataset
@@ -105,20 +108,20 @@ class Dataset(Dataset):
 
         img_name = os.path.join('./chaoyang-data/', self.dataset[idx][0])
         image = cv2.imread(img_name)
-        #if the image is grayscale,repeat the image 3 times to have 3 channels
+        #print(image.shape)
         if len(image.shape) == 2:
             image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
-        # convert the image to RGB
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        #convert the image to float and normalize the values between 0 and 1
-        image = image.astype(np.float32) / 255.0
-        # read the label
-        label = self.dataset[idx][1]
-        # apply the augmentation pipeline
         if self.transform:
             augmented = self.transform(image=image)
             image = augmented['image']
-        # return the image and the label
+        if image.shape[1] == 1:
+            image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
+        image=image_processor(images=image, return_tensors="pt")
+        #print(image['pixel_values'].shape)
+
+        # read the label
+        label = self.dataset[idx][1]
+
         return image, label
     
 def from_path_to_dataloader(path, batch_size, shuffle, need_augmentation):

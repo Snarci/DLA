@@ -105,7 +105,7 @@ class ViTSM(nn.Module):
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
         self.dropout = nn.Dropout(emb_dropout)
 
-        self.transformer = TransformerM(depth=8,memory_blocks=mem_blocks,emb=16, token_size=dim)
+        self.transformer = TransformerM(depth=8,memory_blocks=mem_blocks,emb= (num_patches + 1), token_size=dim)
 
         self.pool = pool
         self.to_latent = nn.Identity()
