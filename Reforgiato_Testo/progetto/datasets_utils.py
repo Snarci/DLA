@@ -103,7 +103,7 @@ def get_CUB_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
 
 
 
-def get_Chaoyang_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
+def get_Chaoyang_loaders(BATCH_SIZE = 16, SEED=42, TRAIN_SPLIT=0.9):
     PATH_TRAIN = './chaoyang-data/train'
     PATH_TEST = './chaoyang-data/test'
     classes = [0,1,2,3]
@@ -116,6 +116,7 @@ def get_Chaoyang_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
     train_dataloader = from_path_to_dataloader(PATH_TRAIN, BATCH_SIZE, shuffle=True, need_augmentation=True)
     test_dataloader  = from_path_to_dataloader(PATH_TEST,  BATCH_SIZE, shuffle=False, need_augmentation=False)
     
+
     # # classes = train_dataloader.dataset.classes
 
     # # concatenate train and test dataloaders using ConcatDataset
@@ -124,13 +125,13 @@ def get_Chaoyang_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
     # train_df, val_df, test_df = get_train_valid_test_split(merged_dataset, SPLITS=SPLITS, SEED=SEED)
 
     #split the train dataset into train and validation
-    train_size = int(0.8 * len(train_dataloader.dataset))
+    train_size = int(TRAIN_SPLIT * len(train_dataloader.dataset))
     val_size = len(train_dataloader.dataset) - train_size
     train_dataset, val_dataset = torch.utils.data.random_split(train_dataloader.dataset, [train_size, val_size])
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-    return train_dataloader, val_dataloader, test_dataloader, classes, 224
+    return train_dataloader, val_dataloader, test_dataloader, classes, 256
     
 
 def get_vegetables_dataloader(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
