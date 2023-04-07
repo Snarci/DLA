@@ -8,7 +8,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-
+import torch.nn.functional as F
+import transformers
 # chanchong
 from dataset_functions import from_path_to_dataloader 
 
@@ -31,15 +32,27 @@ def get_train_valid_test_split(df, SPLITS=[0.8,0.1,0.1], SEED=42):
 
     return train_df, val_df, test_df
 
+def convert_images_dict_to_tensor(images, doReshape=True, resize=None):
+    if type(images)==transformers.image_processing_utils.BatchFeature:
+        images = images['pixel_values']
+        images=images.to(torch.float32)
+        if doReshape:
+            s = images.shape
+            images=images.view(s[0],s[-3],s[-2],s[-1])
+        if resize is not None:
+            images = F.interpolate(images, size=(resize, resize), mode='bilinear', align_corners=False)
+
+    return images
 
 # Example of use:
 #   import datasets_utils
 #   train_loader, val_loader, test_loader, classes = datasets_utils.get_CUB_loaders(BATCH_SIZE=16, SEED=42, SPLITS=[0.8,0.1,0.1])
 #   N_CLASSES = len(classes)
-def get_CUB_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
+def get_CUB_loaders(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1], resize=None):
     PATH = './CUB_200_2011/images/'
+    resize_list = [A.Resize(resize,resize)] if resize is not None else []
     MY_TRANSFORMATIONS = A.Compose([
-        A.Resize(256,256),
+        *resize_list,
         ToTensorV2()
         ])
     
@@ -134,13 +147,31 @@ def get_Chaoyang_loaders(BATCH_SIZE = 16, SEED=42, TRAIN_SPLIT=0.9):
     return train_dataloader, val_dataloader, test_dataloader, classes, 256
     
 
-def get_vegetables_dataloader(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1]):
+def get_vegetables_dataloader(BATCH_SIZE = 16, SEED=42, SPLITS=[0.8,0.1,0.1], resize=None):
     PATH = './vegetables/'
+    resize_list = [A.Resize(resize,resize)] if resize is not None else []
     MY_TRANSFORMATIONS = A.Compose([
-        A.Resize(256,256),
+        *resize_list,
         ToTensorV2()
         ])
     
+
+        
+#     def __len__(self):
+#         return len(self.df)
+    
+#     def __getitem__(self,idx):
+#         image = self.images[idx]
+#         image = plt.imread(image)
+#         #print(image.shape)
+#         if len(image.shape) == 2:
+#             image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
+#         image = transform(image=image)['image']
+#         if image.shape[1] == 1:
+#             image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
+#         image=image_processor(images=image, return_tensors="pt")
+#         #print(image['pixel_values'].shape)
+#         return image
     class VegetableDataset(Dataset):
         def __init__(self,DF, TRANSFORMATIONS):
             self._df = DF
