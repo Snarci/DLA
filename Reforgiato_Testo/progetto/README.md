@@ -23,6 +23,7 @@ File utile per ricordarci le informazioni più importanti
 
 
 <snarci>
+
 ## 1a) Addestramento di un VIT NON Pre-trainato
 <ul>
     <li><b>path del .py/.ipynb che genera il modello: </b>TODO 'ndo cazzo sta?</li>
